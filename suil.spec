@@ -1,17 +1,17 @@
 Summary:	Lightweight C library for loading and wrapping LV2 plugin UIs
 Summary(pl.UTF-8):	Lekka biblioteka C do ładowania i obudowywania UI wtyczek LV2
 Name:		suil
-Version:	0.6.16
+Version:	0.8.0
 Release:	1
 License:	ISC
 Group:		Libraries
 Source0:	http://download.drobilla.net/%{name}-%{version}.tar.bz2
-# Source0-md5:	644ccd95179f32f01cee0107a1ad88c9
+# Source0-md5:	8b6039593b2b8d6838b3b29e36874c1c
 URL:		http://drobilla.net/software/suil/
 BuildRequires:	QtGui-devel >= 4.0.0
 BuildRequires:	gtk+2-devel >= 2:2.18.0
 BuildRequires:	libstdc++-devel
-BuildRequires:	lv2-devel >= 1.0.0
+BuildRequires:	lv2-devel >= 1.6.0
 BuildRequires:	python
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -64,7 +64,7 @@ Summary:	Header files for suil library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki suil
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	lv2-devel >= 1.0.0
+Requires:	lv2-devel >= 1.6.0
 
 %description devel
 Header files for suil library.
