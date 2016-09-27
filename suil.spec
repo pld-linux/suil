@@ -1,17 +1,18 @@
 Summary:	Lightweight C library for loading and wrapping LV2 plugin UIs
 Summary(pl.UTF-8):	Lekka biblioteka C do ładowania i obudowywania UI wtyczek LV2
 Name:		suil
-Version:	0.8.2
+Version:	0.8.4
 Release:	1
 License:	ISC
 Group:		Libraries
 Source0:	http://download.drobilla.net/%{name}-%{version}.tar.bz2
-# Source0-md5:	1b06947b1fc028f9ffcbc16d30065aa5
+# Source0-md5:	50598cc44f419f60805862272abe881c
 URL:		http://drobilla.net/software/suil/
-BuildRequires:	QtGui-devel >= 4.0.0
+BuildRequires:	QtGui-devel >= 4.4.0
+BuildRequires:	Qt5Widgets-devel >= 5.1.0
 BuildRequires:	gtk+2-devel >= 2:2.18.0
 BuildRequires:	libstdc++-devel
-BuildRequires:	lv2-devel >= 1.6.0
+BuildRequires:	lv2-devel >= 1.12.0
 BuildRequires:	python
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -64,7 +65,7 @@ Summary:	Header files for suil library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki suil
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	lv2-devel >= 1.6.0
+Requires:	lv2-devel >= 1.12.0
 
 %description devel
 Header files for suil library.
@@ -108,7 +109,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk2.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt4.so
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt5.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt4.so
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt5.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_qt4_in_gtk2.so
 
 %files devel
