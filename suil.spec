@@ -5,12 +5,12 @@
 Summary:	Lightweight C library for loading and wrapping LV2 plugin UIs
 Summary(pl.UTF-8):	Lekka biblioteka C do ładowania i obudowywania UI wtyczek LV2
 Name:		suil
-Version:	0.8.4
+Version:	0.10.2
 Release:	1
 License:	ISC
 Group:		Libraries
 Source0:	http://download.drobilla.net/%{name}-%{version}.tar.bz2
-# Source0-md5:	50598cc44f419f60805862272abe881c
+# Source0-md5:	e92d656b5faf999226642cdbe595976d
 URL:		http://drobilla.net/software/suil/
 %{?with_qt4:BuildRequires:	QtGui-devel >= 4.4.0}
 BuildRequires:	Qt5Widgets-devel >= 5.1.0
@@ -104,16 +104,19 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS COPYING NEWS README
+%doc AUTHORS COPYING NEWS README.md
 %attr(755,root,root) %{_libdir}/libsuil-0.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libsuil-0.so.0
 %dir %{_libdir}/suil-0
 
 %files modules
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk2.so
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt5.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt5.so
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_qt5_in_gtk2.so
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk2.so
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk3.so
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt5.so
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11.so
 %if %{with qt4}
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt4.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt4.so
