@@ -1,3 +1,7 @@
+#
+# Conditional build:
+%bcond_with    qt4                     # Qt4 support
+
 Summary:	Lightweight C library for loading and wrapping LV2 plugin UIs
 Summary(pl.UTF-8):	Lekka biblioteka C do ładowania i obudowywania UI wtyczek LV2
 Name:		suil
@@ -8,7 +12,7 @@ Group:		Libraries
 Source0:	http://download.drobilla.net/%{name}-%{version}.tar.bz2
 # Source0-md5:	50598cc44f419f60805862272abe881c
 URL:		http://drobilla.net/software/suil/
-BuildRequires:	QtGui-devel >= 4.4.0
+%{?with_qt4:BuildRequires:	QtGui-devel >= 4.4.0}
 BuildRequires:	Qt5Widgets-devel >= 5.1.0
 BuildRequires:	gtk+2-devel >= 2:2.18.0
 BuildRequires:	libstdc++-devel
@@ -48,7 +52,7 @@ Summary:	UI wrapper modules for suil library
 Summary(pl.UTF-8):	Moduły obudowujące UI dla biblioteki suil
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	QtGui >= 4.0.0
+%{?with_qt4:Requires:	QtGui >= 4.0.0}
 Requires:	gtk+2 >= 2:2.18.0
 
 %description modules
@@ -108,11 +112,13 @@ rm -rf $RPM_BUILD_ROOT
 %files modules
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk2.so
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt4.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt5.so
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt4.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt5.so
+%if %{with qt4}
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt4.so
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt4.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_qt4_in_gtk2.so
+%endif
 
 %files devel
 %defattr(644,root,root,755)
