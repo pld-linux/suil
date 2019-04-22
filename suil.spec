@@ -1,6 +1,8 @@
 #
 # Conditional build:
-%bcond_with    qt4                     # Qt4 support
+%bcond_without	gtk	# GTK+ (2,3) support
+%bcond_with	qt4	# Qt4 support
+%bcond_without	qt5	# Qt5 support
 
 Summary:	Lightweight C library for loading and wrapping LV2 plugin UIs
 Summary(pl.UTF-8):	Lekka biblioteka C do ładowania i obudowywania UI wtyczek LV2
@@ -13,8 +15,9 @@ Source0:	http://download.drobilla.net/%{name}-%{version}.tar.bz2
 # Source0-md5:	e92d656b5faf999226642cdbe595976d
 URL:		http://drobilla.net/software/suil/
 %{?with_qt4:BuildRequires:	QtGui-devel >= 4.4.0}
-BuildRequires:	Qt5Widgets-devel >= 5.1.0
-BuildRequires:	gtk+2-devel >= 2:2.18.0
+%{?with_qt5:BuildRequires:	Qt5Widgets-devel >= 5.1.0}
+%{?with_gtk:BuildRequires:	gtk+2-devel >= 2:2.18.0}
+%{?with_gtk:BuildRequires:	gtk+3-devel >= 3.14.0}
 BuildRequires:	libstdc++-devel
 BuildRequires:	lv2-devel >= 1.12.0
 BuildRequires:	python
@@ -52,8 +55,10 @@ Summary:	UI wrapper modules for suil library
 Summary(pl.UTF-8):	Moduły obudowujące UI dla biblioteki suil
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
-%{?with_qt4:Requires:	QtGui >= 4.0.0}
-Requires:	gtk+2 >= 2:2.18.0
+%{?with_qt4:Requires:	QtGui >= 4.4.0}
+%{?with_qt5:Requires:	Qt5Widgets >= 5.1.0}
+%{?with_gtk:Requires:	gtk+2 >= 2:2.18.0}
+%{?with_gtk:Requires:	gtk+3 >= 3.14.0}
 
 %description modules
 Dynamically loaded modules for suil library, allowing to use X11
@@ -86,7 +91,12 @@ CFLAGS="%{rpmcflags}" \
 ./waf configure \
 	--prefix=%{_prefix} \
 	--libdir=%{_libdir} \
-	--gtk2-lib-name=libgtk-x11-2.0.so.0
+	--gtk2-lib-name=libgtk-x11-2.0.so.0 \
+	--gtk3-lib-name=libgtk-3.so.0 \
+	%{!?with_gtk:--no-gtk} \
+	%{!?with_qt4:--no-qt4} \
+	%{!?with_qt4:--no-qt4} \
+	%{!?with_qt5:--no-qt5}
 
 ./waf -v
 
@@ -111,16 +121,24 @@ rm -rf $RPM_BUILD_ROOT
 
 %files modules
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt5.so
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_qt5_in_gtk2.so
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11.so
+%if %{with gtk}
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk2.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk3.so
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt5.so
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11.so
+%endif
 %if %{with qt4}
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt4.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt4.so
+%endif
+%if %{with qt5}
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt5.so
+%endif
+%if %{with gtk} && %{with qt4}
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt4.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_qt4_in_gtk2.so
+%endif
+%if %{with gtk} && %{with qt5}
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt5.so
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_qt5_in_gtk2.so
 %endif
 
 %files devel
