@@ -1,14 +1,14 @@
 #
 # Conditional build:
 %bcond_without	gtk	# GTK+ (2,3) support
-%bcond_with	qt4	# Qt4 support
+%bcond_without	qt4	# Qt4 support
 %bcond_without	qt5	# Qt5 support
 
 Summary:	Lightweight C library for loading and wrapping LV2 plugin UIs
 Summary(pl.UTF-8):	Lekka biblioteka C do ładowania i obudowywania UI wtyczek LV2
 Name:		suil
 Version:	0.10.2
-Release:	1
+Release:	2
 License:	ISC
 Group:		Libraries
 Source0:	http://download.drobilla.net/%{name}-%{version}.tar.bz2
