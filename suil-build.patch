@@ -1,0 +1,36 @@
+--- suil-0.10.10/src/gtk2_in_qt4.cpp.orig	2021-01-02 16:14:16.063443200 +0100
++++ suil-0.10.10/src/gtk2_in_qt4.cpp	2021-01-10 22:10:07.636286700 +0100
+@@ -27,9 +27,7 @@
+ 
+ extern "C" {
+ 
+-using SuilGtk2InQt4Wrapper = _SuilGtk2InQt4Wrapper;
+-
+-struct _SuilGtk2InQt4Wrapper {
++struct SuilGtk2InQt4Wrapper {
+   QX11EmbedContainer* host_widget;
+   QWidget*            parent;
+   GtkWidget*          plug;
+--- suil-0.10.10/src/qt4_in_gtk2.cpp.orig	2021-01-02 16:14:16.063443200 +0100
++++ suil-0.10.10/src/qt4_in_gtk2.cpp	2021-01-10 22:10:27.692844711 +0100
+@@ -30,10 +30,7 @@
+ #define SUIL_QT_WRAPPER(obj) \
+   (G_TYPE_CHECK_INSTANCE_CAST((obj), SUIL_TYPE_QT_WRAPPER, SuilQtWrapper))
+ 
+-using SuilQtWrapper      = _SuilQtWrapper;
+-using SuilQtWrapperClass = _SuilQtWrapperClass;
+-
+-struct _SuilQtWrapper {
++struct SuilQtWrapper {
+   GtkSocket        socket;
+   QApplication*    app;
+   QX11EmbedWidget* qembed;
+@@ -41,7 +38,7 @@
+   SuilInstance*    instance;
+ };
+ 
+-struct _SuilQtWrapperClass {
++struct SuilQtWrapperClass {
+   GtkSocketClass parent_class;
+ };
+ 
