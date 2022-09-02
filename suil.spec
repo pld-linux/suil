@@ -1,27 +1,37 @@
 #
 # Conditional build:
+%bcond_with	apidocs	# API documentation
 %bcond_without	gtk	# GTK+ (2,3) support
-%bcond_without	qt4	# Qt4 support
 %bcond_without	qt5	# Qt5 support
 
 Summary:	Lightweight C library for loading and wrapping LV2 plugin UIs
 Summary(pl.UTF-8):	Lekka biblioteka C do ładowania i obudowywania UI wtyczek LV2
 Name:		suil
-Version:	0.10.10
+Version:	0.10.16
 Release:	1
 License:	ISC
 Group:		Libraries
-Source0:	http://download.drobilla.net/%{name}-%{version}.tar.bz2
-# Source0-md5:	565c25c3b231e050642517a63627e64a
-Patch0:		%{name}-build.patch
+Source0:	http://download.drobilla.net/%{name}-%{version}.tar.xz
+# Source0-md5:	7586eaed15a15b44b42bd55758cb71a4
 URL:		http://drobilla.net/software/suil/
-%{?with_qt4:BuildRequires:	QtGui-devel >= 4.4.0}
 %{?with_qt5:BuildRequires:	Qt5Widgets-devel >= 5.1.0}
+%{?with_qt5:BuildRequires:	Qt5X11Extras-devel >= 5.1.0}
 %{?with_gtk:BuildRequires:	gtk+2-devel >= 2:2.18.0}
 %{?with_gtk:BuildRequires:	gtk+3-devel >= 3.14.0}
-BuildRequires:	libstdc++-devel
-BuildRequires:	lv2-devel >= 1.16.0
-BuildRequires:	python >= 2
+BuildRequires:	libstdc++-devel >= 6:5
+BuildRequires:	lv2-devel >= 1.18.3
+BuildRequires:	meson >= 0.56.0
+BuildRequires:	ninja >= 1.5
+BuildRequires:	pkgconfig
+BuildRequires:	rpmbuild(macros) >= 1.736
+BuildRequires:	tar >= 1:1.22
+BuildRequires:	xorg-lib-libX11-devel
+BuildRequires:	xz
+%if %{with apidocs}
+BuildRequires:	doxygen
+BuildRequires:	sphinx-pdg
+%endif
+Requires:	lv2 >= 1.18.3
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -56,8 +66,8 @@ Summary:	UI wrapper modules for suil library
 Summary(pl.UTF-8):	Moduły obudowujące UI dla biblioteki suil
 Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
-%{?with_qt4:Requires:	QtGui >= 4.4.0}
 %{?with_qt5:Requires:	Qt5Widgets >= 5.1.0}
+%{?with_qt5:Requires:	Qt5X11Extras >= 5.1.0}
 %{?with_gtk:Requires:	gtk+2 >= 2:2.18.0}
 %{?with_gtk:Requires:	gtk+3 >= 3.14.0}
 
@@ -75,7 +85,7 @@ Summary:	Header files for suil library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki suil
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	lv2-devel >= 1.16.0
+Requires:	lv2-devel >= 1.18.3
 
 %description devel
 Header files for suil library.
@@ -85,28 +95,21 @@ Pliki nagłówkowe biblioteki suil.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
-CC="%{__cc}" \
-CFLAGS="%{rpmcflags}" \
-./waf configure \
-	--prefix=%{_prefix} \
-	--libdir=%{_libdir} \
-	--gtk2-lib-name=libgtk-x11-2.0.so.0 \
-	--gtk3-lib-name=libgtk-3.so.0 \
-	%{!?with_gtk:--no-gtk} \
-	%{!?with_qt4:--no-qt4} \
-	%{!?with_qt4:--no-qt4} \
-	%{!?with_qt5:--no-qt5}
+%meson build \
+	--default-library=shared \
+	%{!?with_apidocs:-Ddocs=disabled} \
+	%{!?with_gtk:-Dgtk2=disabled} \
+	%{!?with_gtk:-Dgtk3=disabled} \
+	%{!?with_qt5:-Dqt5=disabled}
 
-./waf -v
+%ninja_build -C build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-./waf install \
-	--destdir=$RPM_BUILD_ROOT
+%ninja_install -C build
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -128,15 +131,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk2.so
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk3.so
 %endif
-%if %{with qt4}
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt4.so
-%endif
 %if %{with qt5}
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt5.so
-%endif
-%if %{with gtk} && %{with qt4}
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt4.so
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_qt4_in_gtk2.so
 %endif
 %if %{with gtk} && %{with qt5}
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt5.so
