@@ -7,12 +7,12 @@
 Summary:	Lightweight C library for loading and wrapping LV2 plugin UIs
 Summary(pl.UTF-8):	Lekka biblioteka C do ładowania i obudowywania UI wtyczek LV2
 Name:		suil
-Version:	0.10.18
+Version:	0.10.20
 Release:	1
 License:	ISC
 Group:		Libraries
 Source0:	http://download.drobilla.net/%{name}-%{version}.tar.xz
-# Source0-md5:	4e6b74025721a8117526e6d2ebece352
+# Source0-md5:	2c4a47fcb71648430e0762d29d8db032
 URL:		http://drobilla.net/software/suil/
 %{?with_qt5:BuildRequires:	Qt5Widgets-devel >= 5.1.0}
 %{?with_qt5:BuildRequires:	Qt5X11Extras-devel >= 5.1.0}
@@ -133,11 +133,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %if %{with qt5}
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt5.so
-%endif
-%if %{with gtk} && %{with qt5}
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_gtk2_in_qt5.so
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_qt5_in_gtk2.so
-%attr(755,root,root) %{_libdir}/suil-0/libsuil_qt5_in_gtk3.so
 %endif
 
 %files devel
