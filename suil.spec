@@ -1,37 +1,44 @@
 #
 # Conditional build:
-%bcond_with	apidocs	# API documentation
-%bcond_without	gtk	# GTK+ (2,3) support
-%bcond_without	qt5	# Qt5 support
+%bcond_without	apidocs	# API documentation
+%bcond_without	gtk2	# GTK+ 2 wrappers
+%bcond_without	gtk3	# GTK+ 3 wrappers
+%bcond_without	qt5	# Qt5 wrappers
+%bcond_without	qt6	# Qt6 wrappers
 
 Summary:	Lightweight C library for loading and wrapping LV2 plugin UIs
 Summary(pl.UTF-8):	Lekka biblioteka C do ładowania i obudowywania UI wtyczek LV2
 Name:		suil
-Version:	0.10.20
+Version:	0.10.22
 Release:	1
 License:	ISC
 Group:		Libraries
 Source0:	http://download.drobilla.net/%{name}-%{version}.tar.xz
-# Source0-md5:	2c4a47fcb71648430e0762d29d8db032
+# Source0-md5:	3d4891e862a6e3659ed0b0e462ee982c
 URL:		http://drobilla.net/software/suil/
 %{?with_qt5:BuildRequires:	Qt5Widgets-devel >= 5.1.0}
 %{?with_qt5:BuildRequires:	Qt5X11Extras-devel >= 5.1.0}
-%{?with_gtk:BuildRequires:	gtk+2-devel >= 2:2.18.0}
-%{?with_gtk:BuildRequires:	gtk+3-devel >= 3.14.0}
-BuildRequires:	libstdc++-devel >= 6:5
-BuildRequires:	lv2-devel >= 1.18.3
+%{?with_qt6:BuildRequires:	Qt6Widgets-devel >= 6.2.0}
+%{?with_gtk2:BuildRequires:	gtk+2-devel >= 2:2.18.0}
+%{?with_gtk3:BuildRequires:	gtk+3-devel >= 3.14.0}
+BuildRequires:	libstdc++-devel >= 6:7
+BuildRequires:	lv2-devel >= 1.18.4
 BuildRequires:	meson >= 0.56.0
 BuildRequires:	ninja >= 1.5
 BuildRequires:	pkgconfig
-BuildRequires:	rpmbuild(macros) >= 1.736
+BuildRequires:	rpm-build >= 4.6
+BuildRequires:	rpmbuild(macros) >= 2.042
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xorg-lib-libX11-devel
 BuildRequires:	xz
 %if %{with apidocs}
 BuildRequires:	doxygen
+BuildRequires:	python3 >= 1:3.6
+BuildRequires:	python3-sphinx_lv2_theme
 BuildRequires:	sphinx-pdg
+BuildRequires:	sphinxygen
 %endif
-Requires:	lv2 >= 1.18.3
+Requires:	lv2 >= 1.18.4
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -68,8 +75,9 @@ Group:		Libraries
 Requires:	%{name} = %{version}-%{release}
 %{?with_qt5:Requires:	Qt5Widgets >= 5.1.0}
 %{?with_qt5:Requires:	Qt5X11Extras >= 5.1.0}
-%{?with_gtk:Requires:	gtk+2 >= 2:2.18.0}
-%{?with_gtk:Requires:	gtk+3 >= 3.14.0}
+%{?with_qt6:Requires:	Qt6Widgets >= 6.2.0}
+%{?with_gtk2:Requires:	gtk+2 >= 2:2.18.0}
+%{?with_gtk3:Requires:	gtk+3 >= 3.14.0}
 
 %description modules
 Dynamically loaded modules for suil library, allowing to use X11
@@ -85,7 +93,7 @@ Summary:	Header files for suil library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki suil
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	lv2-devel >= 1.18.3
+Requires:	lv2-devel >= 1.18.4
 
 %description devel
 Header files for suil library.
@@ -93,23 +101,37 @@ Header files for suil library.
 %description devel -l pl.UTF-8
 Pliki nagłówkowe biblioteki suil.
 
+%package apidocs
+Summary:	API documentation for suil library
+Summary(pl.UTF-8):	Dokumentacja API biblioteki suil
+Group:		Documentation
+BuildArch:	noarch
+
+%description apidocs
+API documentation for suil library.
+
+%description apidocs -l pl.UTF-8
+Dokumentacja API biblioteki suil.
+
 %prep
 %setup -q
 
 %build
-%meson build \
+%meson \
 	--default-library=shared \
 	%{!?with_apidocs:-Ddocs=disabled} \
-	%{!?with_gtk:-Dgtk2=disabled} \
-	%{!?with_gtk:-Dgtk3=disabled} \
-	%{!?with_qt5:-Dqt5=disabled}
+	%{!?with_gtk2:-Dgtk2=disabled} \
+	%{!?with_gtk3:-Dgtk3=disabled} \
+	%{!?with_qt5:-Dqt5=disabled} \
+	%{!?with_qt6:-Dqt6=disabled} \
+	-Dsinglehtml=disabled
 
-%ninja_build -C build
+%meson_build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%ninja_install -C build
+%meson_install
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -127,12 +149,17 @@ rm -rf $RPM_BUILD_ROOT
 %files modules
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11.so
-%if %{with gtk}
+%if %{with gtk2}
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk2.so
+%endif
+%if %{with gtk3}
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_gtk3.so
 %endif
 %if %{with qt5}
 %attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt5.so
+%endif
+%if %{with qt6}
+%attr(755,root,root) %{_libdir}/suil-0/libsuil_x11_in_qt6.so
 %endif
 
 %files devel
@@ -140,3 +167,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libsuil-0.so
 %{_includedir}/suil-0
 %{_pkgconfigdir}/suil-0.pc
+
+%if %{with apidocs}
+%files apidocs
+%defattr(644,root,root,755)
+%dir %{_docdir}/suil-0
+%{_docdir}/suil-0/html
+%endif
